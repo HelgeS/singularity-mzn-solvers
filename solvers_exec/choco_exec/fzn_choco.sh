@@ -38,6 +38,9 @@ OPTIONS:
     --jargs <args>
 		Override default java argument (\"-Xss64m -Xms64m -Xmx4096m -server\")
 		
+    -stat
+        When invoked with this option the solver prints statistics.
+
 EXAMPLES:
 	
 	Basic command to solve a fzn model with choco:
@@ -86,6 +89,10 @@ do
             shift
         ;;
 
+        -stat)
+            PRINT_STATS="yes"
+        ;;
+
     	--jargs)
             JAVA_ARGS="$2"
             shift
@@ -117,6 +124,11 @@ fi
 if test "${FREE_SEARCH}" = "yes"
 then
     ARGS=$ARGS" -f"
+fi
+
+if test "${PRINT_STATS}" = "yes"
+then
+    ARGS=$ARGS" -stat"
 fi
 
 CMD="java ${JAVA_ARGS} -cp .:${CHOCO_JAR} org.chocosolver.parser.flatzinc.ChocoFZN ${ARGS}"

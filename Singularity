@@ -19,7 +19,8 @@ rm MiniZincIDE-2.1.6-bundle-linux-x86_64.tgz
 mv MiniZincIDE-2.1.6-bundle-linux-x86_64 /minizinc
 
 # Link minizinc bundle solvers
-ln -s /minizinc/fzn-chuffed /solvers/chuffed/fzn_chuffed
+mkdir /solvers_exec/chuffed_exec
+ln -s /minizinc/fzn-chuffed /solvers_exec/chuffed_exec/fzn_chuffed
 
 # or-tools
 tar xvzf or-tools_flatzinc_Ubuntu-16.04-64bit_v6.5.4527.tar.gz

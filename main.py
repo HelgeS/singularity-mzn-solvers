@@ -64,7 +64,7 @@ subprocess.call(cmd.split())
 mzn2fzn_duration = time.time() - start
 
 # flatzinc
-fzn_options = [solver.statistics]
+fzn_options = solver.statistics.split()
 
 if args.timeout > 0:
     fzn_options.append(solver.time_limit.format(args.timeout))
@@ -76,6 +76,7 @@ if args.all:
     fzn_options.append(solver.all_opt)
 
 cmd = [solver.fzn_exec] + fzn_options + [fzn]
+print(cmd)
 start = time.time()
 subprocess.call(cmd)
 fzn_duration = time.time() - start

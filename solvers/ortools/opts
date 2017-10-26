@@ -1,4 +1,4 @@
 all_opt = '-a'
 free_opt  = '-f'
-statistics = '-statistics'
+statistics = '-fz_logging -statistics'
 time_limit = '--time_limit {:d}000'
