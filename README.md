@@ -1,6 +1,6 @@
-# docker-mzn-solvers
+# Singularity MiniZinc solvers
 
-Tools to generate Docker or Singularity containers with minizinc and several compatible solvers.
+Tools to generate Singularity containers with minizinc and several compatible solvers.
 
 The structure and the scripts are closely adapted from SUNNY-CP (https://github.com/CP-Unibo/sunny-cp), 
 but there is no functionality for portfolio solving, feature extraction or anything else. If you need this, go to SUNNY-CP.
