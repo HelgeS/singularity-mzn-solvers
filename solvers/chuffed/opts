@@ -1,0 +1,4 @@
+all_opt = '-a'
+free_opt  = '-f'
+statistics = '-s'
+time_limit = '--time-out {:d}'

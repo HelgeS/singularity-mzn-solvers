@@ -1,0 +1,4 @@
+all_opt = '-a'
+free_opt = '-f'
+statistics = '-stat'
+time_limit = '-tl {:d}000'
