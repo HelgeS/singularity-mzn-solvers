@@ -67,7 +67,7 @@ mzn2fzn_duration = time.time() - start
 fzn_options = solver.statistics.split()
 
 if args.timeout > 0:
-    fzn_options.append(solver.time_limit.format(args.timeout))
+    fzn_options.extend(solver.time_limit.format(args.timeout).split())
 
 if args.free:
     fzn_options.append(solver.free_opt)
