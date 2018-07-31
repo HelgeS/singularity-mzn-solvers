@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import shutil
 import solvers
 import subprocess
@@ -7,7 +8,7 @@ import tempfile
 import time
 
 
-def post_constraint(mzn, dzn_name, objective_var, lb=0, ub=0):
+def post_constraint(mzn, dzn_name, objective_var, lb=0, ub=0, objvalsel=None, objvalselplaceholder='{{OBJVALSEL}}'):
     if lb and ub:
         assert (lb <= ub)
 
@@ -27,7 +28,25 @@ def post_constraint(mzn, dzn_name, objective_var, lb=0, ub=0):
     mzn_new = tempfile.NamedTemporaryFile(delete=False, prefix='{}-{}-'.format(mzn_base, dzn_name), suffix='.mzn').name
 
     shutil.copy(mzn, mzn_new)
-    open(mzn_new, 'a').write(new_constraint)
+
+    if objvalsel:
+        # Also set value selection heuristic for the objective variable
+        mzn_content = open(mzn_new, 'r').read()
+
+        if objvalselplaceholder in mzn_content:
+            mzn_content = mzn_content.replace(objvalselplaceholder, objvalsel)
+        else:
+            new_search = "int_search([objective], input_order, {}, complete".format(objvalsel)
+            if "int_search([objective], input_order, indomain_min, complete)" in mzn_content:
+                mzn_content = mzn_content.replace("int_search([objective], input_order, indomain_min, complete)", new_search)
+            elif "int_search([objective], input_order, indomain_max, complete)" in mzn_content:
+                mzn_content = mzn_content.replace("int_search([objective], input_order, indomain_max, complete)", new_search)
+
+        mzn_content += os.linesep + new_constraint
+        open(mzn_new, 'w').write(mzn_content)
+    elif new_constraint:
+        # Only add constraint
+        open(mzn_new, 'a').write(new_constraint)
 
     return mzn_new
 
@@ -44,6 +63,8 @@ parser.add_argument('-a', '--all', action='store_true', default=False, help='Lis
 parser.add_argument('-c', '--comment', default=None, help='Comment which will be added to output')
 parser.add_argument('-o', '--output', default=None, help='Output file for stdout and stderr')
 parser.add_argument('-var', '--variable', default='objective', help='Name of objective variable')
+parser.add_argument('-single-sol', action='store_true', default=False, help='Only return first solution')
+parser.add_argument('-objvalsel', default=None, help="Objective variable value selection heuristic (must be supported by model)")
 args = parser.parse_args()
 print('Args: {}'.format(args))
 
@@ -54,11 +75,12 @@ if args.dzn:
 else:
     dzn_name = ''
 
-mzn_new = post_constraint(args.mzn, dzn_name, args.variable, args.lowerbound, args.upperbound)
+mzn_new = post_constraint(args.mzn, dzn_name, args.variable, args.lowerbound, args.upperbound, args.objvalsel)
 fzn = mzn_new.replace('.mzn', '.fzn')
+ozn = mzn_new.replace('.mzn', '.ozn')
 
 # mzn2fzn
-cmd = 'mzn2fzn -I ' + solver.mznlib + ' ' + mzn_new + ' ' + args.dzn + ' -o ' + fzn
+cmd = 'mzn2fzn -I ' + solver.mznlib + ' ' + mzn_new + ' ' + args.dzn + ' -o ' + fzn + ' -O ' + ozn
 start = time.time()
 subprocess.call(cmd.split())
 mzn2fzn_duration = time.time() - start
@@ -75,10 +97,16 @@ if args.free:
 if args.all:
     fzn_options.append(solver.all_opt)
 
+if args.single_sol:
+    fzn_options.extend(solver.single_sol.split())
+
+start = time.time()
 cmd = [solver.fzn_exec] + fzn_options + [fzn]
 print(cmd)
-start = time.time()
-subprocess.call(cmd)
+solver_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+subprocess.call(['solns2out', '-c', '--output-time', ozn], stdin=solver_process.stdout)
+solver_process.wait()
+
 fzn_duration = time.time() - start
 
 print('Time_mzn2fzn: {:.2f}'.format(mzn2fzn_duration))

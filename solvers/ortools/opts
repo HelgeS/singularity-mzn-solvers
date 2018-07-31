@@ -1,4 +1,5 @@
 all_opt = '-a'
 free_opt  = '-f'
-statistics = '-fz_logging -statistics'
+statistics = '-statistics'
 time_limit = '--time_limit {:d}000'
+single_sol = ''
