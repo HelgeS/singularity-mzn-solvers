@@ -53,7 +53,7 @@ def post_constraint(mzn, dzn_name, objective_var, lb=0, ub=0, objvalsel=None, ob
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mzn', help='Path to minizinc model')
-parser.add_argument('-d', '--dzn', help='Path to data file')
+parser.add_argument('-d', '--dzn', help='Path to data file', default="")
 parser.add_argument('-lb', '--lowerbound', type=int, default=None, help='Lower bound for objective variable')
 parser.add_argument('-ub', '--upperbound', type=int, default=None, help='Upper bound for objective variable')
 parser.add_argument('-s', '--solver', choices=[s.name for s in solvers.solvers], default='chuffed')
