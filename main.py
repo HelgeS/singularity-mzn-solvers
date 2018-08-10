@@ -80,7 +80,7 @@ fzn = mzn_new.replace('.mzn', '.fzn')
 ozn = mzn_new.replace('.mzn', '.ozn')
 
 # mzn2fzn
-cmd = 'mzn2fzn -I ' + solver.mznlib + ' ' + mzn_new + ' ' + args.dzn + ' -o ' + fzn + ' -O ' + ozn
+cmd = 'mzn2fzn -I ' + solver.mznlib + ' ' + mzn_new + ' ' + args.dzn + ' -o ' + fzn + ' -O ' + ozn + ' --output-mode json'
 start = time.time()
 subprocess.call(cmd.split())
 mzn2fzn_duration = time.time() - start
@@ -104,7 +104,7 @@ start = time.time()
 cmd = [solver.fzn_exec] + fzn_options + [fzn]
 print(cmd)
 solver_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-subprocess.call(['solns2out', '-c', '--output-time', ozn], stdin=solver_process.stdout)
+subprocess.call(['solns2out', '--no-flush-output', '--output-time', ozn], stdin=solver_process.stdout)
 solver_process.wait()
 
 fzn_duration = time.time() - start
