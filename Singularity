@@ -20,10 +20,13 @@ tar zxf MiniZincIDE-2.1.7-bundle-linux-x86_64.tgz
 rm MiniZincIDE-2.1.7-bundle-linux-x86_64.tgz
 mv MiniZincIDE-2.1.7-bundle-linux-x86_64 /minizinc
 
-# Link minizinc bundle solvers
+# Link minizinc bundle solvers to paths the main.py script knows
 mkdir /solvers_exec/chuffed_exec
 ln -s /minizinc/fzn-chuffed /solvers_exec/chuffed_exec/fzn_chuffed
-cp /minizinc/share/minizinc/gecode/* /solvers/gecode/mzn-lib/
+ln -s /minizinc/share/minizinc/chuffed /solvers/chuffed/mzn-lib
+ln -s /minizinc/share/minizinc/gecode /solvers/gecode/mzn-lib
+
+cat /solvers/chuffed/int_pow.mzn >> /solvers/chuffed/mzn-lib/redefinitions.mzn
 
 # or-tools
 tar xzf or-tools_flatzinc_ubuntu-16.04_v6.8.5452.tar.gz
